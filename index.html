@@ -387,7 +387,7 @@ function submitAns(){
   if(!val){inp.focus();return;}
   tries++;
   const q=Q[current];
-  const ok=q.ans.some(a=>val.includes(a.toLowerCase())||a.toLowerCase().includes(val));
+  const ok=q.ans.some(a=>val===a.toLowerCase());
   const fb=document.getElementById('feedback');
   if(ok){
     solved=true;
@@ -492,11 +492,10 @@ function restart(){show('setup');}
 
 // ── 타이머 ──
 function startTimer(){
-  timerVal=60;timerOn=true;updateTimerUI();
+  timerVal=1;timerOn=true;updateTimerUI();
   clearInterval(timerInterval);
   timerInterval=setInterval(()=>{
-    if(!timerOn)return;timerVal--;updateTimerUI();
-    if(timerVal<=0){stopTimer();autoHint();}
+    if(!timerOn)return;timerVal++;updateTimerUI();
   },1000);
 }
 function stopTimer(){timerOn=false;clearInterval(timerInterval);}
@@ -504,7 +503,7 @@ function toggleTimer(){timerOn=!timerOn;document.getElementById('tbtn').textCont
 function resetTimer(){stopTimer();startTimer();}
 function updateTimerUI(){
   const el=document.getElementById('timer');el.textContent=timerVal;
-  el.className='timer-num'+(timerVal<=10?' danger':timerVal<=20?' warn':'');
+  el.className='timer-num'+(timerVal>=50?' danger':timerVal>=30?' warn':'');
 }
 function autoHint(){
   document.getElementById('hint-box').textContent='🔍 힌트: '+Q[current].hint;
