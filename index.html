@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORVIA × TENX | NotebookLM 퀴즈</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  :root{--blue:#0926BD;--sky:#38BDF8;--dark:#0F172A;--white:#FFFFFF;
+    --gray:#94A3B8;--light:#F1F5F9;--slate:#E2E8F0;
+    --green:#10B981;--red:#EF4444;--yellow:#F59E0B;--purple:#8B5CF6;--bg:#F8FAFC;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
+    background:var(--bg);color:var(--dark);min-height:100vh;}
+  header{background:linear-gradient(135deg,var(--blue) 0%,#1D4ED8 100%);
+    padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 2px 12px rgba(9,38,189,0.3);}
+  .h-title{font-size:14px;font-weight:700;color:var(--white);}
+  .h-badge{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);
+    border-radius:20px;padding:4px 13px;font-size:12px;font-weight:600;color:var(--white);}
+  .screen{display:none;}.screen.active{display:block;}
+
+  /* SETUP */
+  #setup{max-width:540px;margin:0 auto;padding:36px 20px;}
+  .hero{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;
+    border-radius:20px;padding:28px 32px;margin-bottom:20px;text-align:center;}
+  .hero h1{font-size:24px;font-weight:800;color:var(--blue);margin-bottom:6px;}
+  .hero p{font-size:13px;color:#3B82F6;line-height:1.6;}
+  .how-box{background:var(--white);border:1px solid var(--slate);border-radius:14px;
+    padding:18px 20px;margin-bottom:20px;}
+  .how-box h3{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;
+    letter-spacing:1px;margin-bottom:14px;}
+  .how-steps{display:flex;}
+  .how-step{flex:1;text-align:center;position:relative;}
+  .how-step:not(:last-child)::after{content:'→';position:absolute;right:-8px;top:11px;
+    color:var(--sky);font-size:16px;font-weight:700;}
+  .step-icon{width:40px;height:40px;border-radius:50%;margin:0 auto 7px;
+    display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .s1{background:#DBEAFE;}.s2{background:#D1FAE5;}.s3{background:#FEF3C7;}.s4{background:#EDE9FE;}
+  .how-step p{font-size:10.5px;font-weight:600;color:var(--dark);line-height:1.4;}
+  .card{background:var(--white);border:1px solid var(--slate);border-radius:16px;padding:22px;margin-bottom:16px;}
+  .card h3{font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;
+    letter-spacing:1px;margin-bottom:14px;}
+  #my-name{width:100%;border:2px solid var(--slate);border-radius:12px;
+    padding:13px 16px;font-size:18px;font-weight:700;color:var(--dark);
+    outline:none;transition:border-color 0.2s;background:var(--light);}
+  #my-name:focus{border-color:var(--blue);background:var(--white);}
+  .btn-row{display:flex;gap:10px;}
+  .start-btn{flex:3;padding:15px;font-size:16px;font-weight:800;
+    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);
+    border:none;border-radius:12px;cursor:pointer;
+    box-shadow:0 4px 14px rgba(9,38,189,0.35);transition:transform 0.15s;}
+  .start-btn:hover{transform:translateY(-2px);}
+  .rank-btn{flex:1;padding:15px;font-size:14px;font-weight:700;
+    background:var(--white);color:var(--blue);border:2px solid var(--blue);
+    border-radius:12px;cursor:pointer;transition:all 0.15s;}
+  .rank-btn:hover{background:#EFF6FF;}
+
+  /* GAME */
+  #game{max-width:780px;margin:0 auto;padding:24px 20px;}
+  .prog-meta{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--gray);margin-bottom:5px;}
+  .prog-track{height:6px;background:var(--slate);border-radius:3px;overflow:hidden;margin-bottom:22px;}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:3px;transition:width 0.4s ease;}
+  .game-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px;}
+  .q-info{flex:1;}
+  .q-src{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;margin-bottom:9px;}
+  .q-text{font-size:20px;font-weight:800;line-height:1.45;color:var(--dark);letter-spacing:-0.4px;}
+  .nlm-hint{font-size:12px;color:#3B82F6;margin-top:7px;font-weight:600;}
+  .timer-card{background:var(--white);border:2px solid var(--slate);border-radius:14px;padding:12px 16px;text-align:center;min-width:100px;}
+  .timer-num{font-size:34px;font-weight:800;line-height:1;margin-bottom:3px;transition:color 0.3s;color:var(--blue);}
+  .timer-num.warn{color:var(--yellow);}.timer-num.danger{color:var(--red);}
+  .timer-label{font-size:10px;color:var(--gray);font-weight:600;margin-bottom:8px;}
+  .timer-btns{display:flex;gap:4px;}
+  .timer-btns button{flex:1;background:var(--light);border:1px solid var(--slate);border-radius:7px;
+    padding:5px 3px;font-size:10px;font-weight:600;color:var(--gray);cursor:pointer;}
+  .timer-btns button:hover{background:var(--blue);color:var(--white);border-color:var(--blue);}
+  .input-area{background:var(--white);border:2px solid var(--slate);border-radius:14px;
+    padding:18px 20px;margin-bottom:14px;transition:border-color 0.2s;}
+  .input-area.on{border-color:var(--blue);}
+  .input-area.ok{border-color:var(--green);background:#ECFDF5;}
+  .input-area.ng{border-color:var(--red);background:#FEF2F2;}
+  .input-label{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:9px;}
+  .ans-input{width:100%;border:none;outline:none;font-size:17px;font-weight:600;
+    color:var(--dark);background:transparent;font-family:inherit;
+    padding:3px 0;border-bottom:2px solid var(--slate);transition:border-color 0.2s;}
+  .ans-input:focus{border-bottom-color:var(--blue);}
+  .ans-input.ok{color:var(--green);border-bottom-color:var(--green);}
+  .ans-input.ng{color:var(--red);border-bottom-color:var(--red);}
+  .feedback{margin-top:10px;font-size:13.5px;font-weight:600;display:none;align-items:center;gap:7px;}
+  .feedback.ok{color:var(--green);}.feedback.ng{color:var(--red);}
+  .hint-btn{background:var(--light);border:1.5px solid var(--slate);border-radius:9px;
+    padding:8px 16px;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;margin-bottom:13px;transition:all 0.2s;}
+  .hint-btn:hover{border-color:var(--blue);color:var(--blue);}
+  .hint-box{background:#FEF3C7;border:1px solid #FDE68A;border-radius:9px;padding:11px 15px;font-size:13px;color:#92400E;margin-bottom:13px;display:none;}
+  .explain-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:11px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:#1E3A8A;display:none;line-height:1.6;}
+  .tries-info{font-size:11.5px;color:var(--gray);margin-bottom:10px;}
+  #my-status{font-size:13.5px;font-weight:700;color:var(--green);margin-bottom:12px;min-height:18px;}
+  .submit-btn{width:100%;padding:14px;font-size:15px;font-weight:700;
+    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);
+    border:none;border-radius:11px;cursor:pointer;margin-bottom:12px;
+    box-shadow:0 3px 10px rgba(9,38,189,0.28);transition:all 0.15s;}
+  .submit-btn:hover{transform:translateY(-1px);}
+  .next-btn{padding:12px 28px;font-size:14px;font-weight:700;
+    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);
+    border:none;border-radius:11px;cursor:pointer;display:none;box-shadow:0 3px 10px rgba(9,38,189,0.28);}
+
+  /* RESULT */
+  #result{max-width:480px;margin:0 auto;padding:36px 20px;text-align:center;}
+  .result-hero{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;
+    border-radius:18px;padding:28px;margin-bottom:20px;}
+  .result-hero h1{font-size:28px;font-weight:800;color:var(--blue);margin-bottom:5px;}
+  .result-hero p{font-size:14px;color:#3B82F6;}
+  .stat-row{display:flex;background:var(--white);border:1px solid var(--slate);
+    border-radius:14px;overflow:hidden;margin-bottom:18px;}
+  .stat-box{flex:1;padding:16px 10px;text-align:center;}
+  .stat-box+.stat-box{border-left:1px solid var(--slate);}
+  .stat-label{font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;}
+  .stat-val{font-size:28px;font-weight:900;line-height:1;}
+  .stat-val.g{color:var(--green);}.stat-val.y{color:var(--yellow);}.stat-val.p{color:var(--purple);}
+  .saving-msg{font-size:13px;color:var(--gray);margin-bottom:16px;min-height:20px;}
+  .result-btns{display:flex;gap:10px;justify-content:center;}
+  .btn-lb{padding:13px 20px;font-size:14px;font-weight:700;background:var(--white);
+    color:var(--blue);border:2px solid var(--blue);border-radius:11px;cursor:pointer;}
+  .btn-lb:hover{background:#EFF6FF;}
+  .btn-restart{padding:13px 20px;font-size:14px;font-weight:700;
+    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);border:none;border-radius:11px;cursor:pointer;}
+
+  /* LEADERBOARD */
+  #leaderboard{max-width:600px;margin:0 auto;padding:36px 20px;}
+  .lb-title{font-size:22px;font-weight:800;color:var(--blue);text-align:center;margin-bottom:4px;}
+  .lb-sub{font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px;}
+  .lb-card{background:var(--white);border:1px solid var(--slate);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+  .lb-header{display:grid;grid-template-columns:52px 1fr 64px 72px 76px;
+    padding:10px 18px;background:var(--light);
+    font-size:10px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:0.8px;}
+  .lb-row{display:grid;grid-template-columns:52px 1fr 64px 72px 76px;
+    padding:13px 18px;border-top:1px solid var(--slate);align-items:center;}
+  .lb-row.gold{background:linear-gradient(135deg,#FFFBEB,#FEF3C7);}
+  .lb-row.silver{background:#F8FAFC;}
+  .lb-row.bronze{background:#FFF7ED;}
+  .lb-rank{font-size:20px;}
+  .lb-name{font-size:14px;font-weight:700;}
+  .lb-score{font-size:14px;font-weight:800;color:var(--blue);text-align:center;}
+  .lb-time{font-size:13px;font-weight:700;color:var(--yellow);text-align:center;}
+  .lb-avg{font-size:12px;font-weight:600;color:var(--purple);text-align:center;}
+  .lb-empty{padding:36px;text-align:center;color:var(--gray);font-size:14px;line-height:1.8;}
+  .lb-btns{display:flex;gap:10px;justify-content:center;}
+  .lb-back{padding:12px 22px;font-size:14px;font-weight:700;background:var(--white);
+    color:var(--blue);border:2px solid var(--blue);border-radius:11px;cursor:pointer;}
+  .lb-clear{padding:12px 22px;font-size:14px;font-weight:700;background:#FEF2F2;
+    color:var(--red);border:2px solid #FCA5A5;border-radius:11px;cursor:pointer;}
+  .lb-refresh{padding:12px 22px;font-size:14px;font-weight:700;background:var(--light);
+    color:var(--gray);border:2px solid var(--slate);border-radius:11px;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-title">FORVIA × TENX &nbsp;|&nbsp; 팀장을 위한 AI 실무 활용 워크샵</div>
+  <div class="h-badge">M3 · NotebookLM 퀴즈</div>
+</header>
+
+<!-- SETUP -->
+<div id="setup" class="screen active">
+  <div class="hero">
+    <h1>📖 NotebookLM 퀴즈 게임</h1>
+    <p>오늘 업로드한 자료 6종에서 출제된 주관식 문제입니다<br>
+      모르면 NotebookLM에서 검색해서 직접 입력하세요!</p>
+  </div>
+  <div class="how-box">
+    <h3>진행 방법</h3>
+    <div class="how-steps">
+      <div class="how-step"><div class="step-icon s1">📖</div><p>NotebookLM<br>열어두기</p></div>
+      <div class="how-step"><div class="step-icon s2">🔍</div><p>문제 보고<br>자료 검색</p></div>
+      <div class="how-step"><div class="step-icon s3">✏️</div><p>답 입력<br>후 제출</p></div>
+      <div class="how-step"><div class="step-icon s4">🏆</div><p>순위표에<br>기록</p></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>👤 내 이름 입력</h3>
+    <input id="my-name" type="text" placeholder="이름을 입력하세요"
+      onkeydown="if(event.key==='Enter') startGame()">
+  </div>
+  <div class="btn-row">
+    <button class="start-btn" onclick="startGame()">🚀 게임 시작!</button>
+    <button class="rank-btn" onclick="showLeaderboard('setup')">🏆 순위표</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+  <div class="prog-meta">
+    <span id="q-tag">문제 1 / 10</span>
+    <span id="score-summary"></span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="prog"></div></div>
+  <div class="game-top">
+    <div class="q-info">
+      <div class="q-src" id="q-src"></div>
+      <div class="q-text" id="q-text"></div>
+      <div class="nlm-hint">💡 NotebookLM에서 찾아보세요!</div>
+    </div>
+    <div class="timer-card">
+      <div class="timer-num" id="timer">60</div>
+      <div class="timer-label">초</div>
+      <div class="timer-btns">
+        <button onclick="toggleTimer()" id="tbtn">⏸</button>
+        <button onclick="resetTimer()">↺</button>
+      </div>
+    </div>
+  </div>
+  <div class="input-area on" id="input-area">
+    <div class="input-label">📝 답 입력</div>
+    <input class="ans-input" id="ans-input" type="text"
+      placeholder="답을 입력하고 Enter 또는 제출 버튼을 누르세요"
+      onkeydown="if(event.key==='Enter') submitAns()">
+    <div class="feedback" id="feedback"></div>
+  </div>
+  <div class="tries-info" id="tries-info"></div>
+  <button class="hint-btn" id="hint-btn" onclick="toggleHint()">💡 힌트 보기</button>
+  <div class="hint-box" id="hint-box"></div>
+  <div class="explain-box" id="explain"></div>
+  <div id="my-status"></div>
+  <button class="submit-btn" id="submit-btn" onclick="submitAns()">✅ 정답 제출</button>
+  <button class="next-btn" id="next-btn" onclick="nextQ()">다음 문제 →</button>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="screen">
+  <div class="result-hero">
+    <h1 id="r-title">🎯 완료!</h1>
+    <p id="r-sub"></p>
+  </div>
+  <div class="stat-row">
+    <div class="stat-box"><div class="stat-label">정답 수</div><div class="stat-val g" id="r-score">0</div></div>
+    <div class="stat-box"><div class="stat-label">총 소요시간</div><div class="stat-val y" id="r-time">0초</div></div>
+    <div class="stat-box"><div class="stat-label">문제당 평균</div><div class="stat-val p" id="r-avg">-초</div></div>
+  </div>
+  <div class="saving-msg" id="saving-msg"></div>
+  <div class="result-btns">
+    <button class="btn-lb" onclick="showLeaderboard('result')">🏆 순위표 보기</button>
+    <button class="btn-restart" onclick="restart()">↺ 다시 시작</button>
+  </div>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="leaderboard" class="screen">
+  <div class="lb-title">🏆 순위표</div>
+  <div class="lb-sub">점수 높은 순 · 동점 시 빠른 시간 우선</div>
+  <div class="lb-card" id="lb-card"><div class="lb-empty">⏳ 불러오는 중...</div></div>
+  <div class="lb-btns">
+    <button class="lb-back" onclick="goBack()">← 돌아가기</button>
+    <button class="lb-refresh" onclick="showLeaderboard(prevScreen)">🔄 새로고침</button>
+    <button class="lb-clear" onclick="clearBoard()">🗑 초기화</button>
+  </div>
+</div>
+
+<script>
+// ── Supabase 연결 ──
+const SUPABASE_URL = 'https://mphwcouoymssjdambufl.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_MMMshr6nQPOItlV9vmRYwA_BWYn8tH_';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const Q=[
+  {q:"FORVIA 옌청(Yancheng) 공장이 2026년 1월 WEF로부터 받은 인증 이름은?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"보도자료 제목에 바로 나옵니다 — 'Lighthouse ___ Factory'",
+   ans:["등대공장","lighthouse factory","라이트하우스","등대 공장"],kw:"등대공장",
+   ex:"2026년 1월 15일, FORVIA 옌청 시트 공장이 WEF로부터 '등대공장(Lighthouse Factory)' 생산성 우수 부문으로 선정됐습니다. FORVIA 전 세계 최초입니다."},
+  {q:"옌청 공장에서 AI 솔루션의 투자 회수 기간은 몇 개월인가요?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'AI 투자 회수 기간'으로 NotebookLM에서 검색하세요",
+   ans:["7.5개월","7.5 개월","7.5달","7.5"],kw:"7.5개월",
+   ex:"보도자료 원문: 'the return on investments of AI solutions implemented in 7.5 months.' — AI 솔루션 투자 비용을 7.5개월 만에 회수했습니다."},
+  {q:"옌청 공장에서 생성형 AI로 최적화를 46% 향상시킨 공정은?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'generative AI'로 NotebookLM에서 검색하세요",
+   ans:["금형 교체","die change","다이 체인지","금형교체"],kw:"금형 교체(die change)",
+   ex:"원문: 'uses generative AI to boost die change optimization by 46%' — 금형 교체 최적화를 생성형 AI로 46% 향상시켰습니다."},
+  {q:"옌청 공장이 빅데이터 모델로 대체한 기존 검사 공정은? (영문 또는 한글)",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'accuracy over 90%'와 함께 언급된 공정입니다",
+   ans:["파괴 테스트","destructive testing","파괴테스트","파괴검사"],kw:"파괴 테스트",
+   ex:"원문: 'replaced and optimized destructive testing by using big data model with accuracy over 90%' — 파괴 테스트를 빅데이터 모델로 대체해 정확도 90% 이상을 달성했습니다."},
+  {q:"옌청 공장은 아시아에서 가장 큰 무엇의 생산 사이트인가요?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'Asia's largest'로 NotebookLM에서 검색하세요",
+   ans:["자동차 시트 트랙","automotive seat track","시트 트랙","seat track"],kw:"자동차 시트 트랙",
+   ex:"원문: 'As Asia's largest automotive seat track production site' — 자동차 시트 트랙 생산에서 아시아 최대 규모입니다."},
+  {q:"옌청 공장이 설립된 연도는?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"보도자료 3페이지에 'established in ____'로 나옵니다",
+   ans:["2011","2011년"],kw:"2011년",
+   ex:"원문: 'Since its establishment in 2011, FORVIA Yancheng plant has...' — 2011년에 설립되어 14년간 운영되어 왔습니다."},
+  {q:"FORVIA Appning이 Microsoft와 협력해 통합하기로 한 Microsoft 도구 이름은?",
+   src:"🌐 자료②",sc:"src-2",
+   hint:"Microsoft Foundry ___",
+   ans:["microsoft foundry tools","foundry tools","파운드리 툴","foundry"],kw:"Microsoft Foundry Tools",
+   ex:"Appning by FORVIA는 Microsoft Foundry Tools를 통합해 음성 인터페이스, 콘텐츠 검색, 개인화 경험을 강화합니다."},
+  {q:"FORVIA의 2024년 연결 매출액은 얼마인가요? (단위 포함)",
+   src:"📄 자료①",sc:"src-1",
+   hint:"보도자료 마지막 회사 소개 단락을 확인하세요",
+   ans:["270억 유로","27billion","27 billion euros","270억유로","27billion euros"],kw:"270억 유로",
+   ex:"원문: 'In 2024, the Group achieved a consolidated revenue of 27 billion euros.' FORVIA의 2024년 매출은 270억 유로입니다."},
+  {q:"FORVIA 전 세계 임직원 수는 몇 명 이상인가요?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"보도자료 하단 회사 소개 마지막 단락을 확인하세요",
+   ans:["150000","150,000","15만","15만명","150000명"],kw:"15만 명",
+   ex:"원문: 'With over 150,000 people, including more than 15,000 R&D engineers across 40+ countries' — 15만명 이상의 임직원이 있습니다."},
+  {q:"FORVIA가 2028년까지 AI 활용으로 달성하려는 절감 목표액은? (단위 포함)",
+   src:"🌐 자료④",sc:"src-4",
+   hint:"유럽 인력 재편 계획과 함께 언급된 금액입니다",
+   ans:["500million","€500m","500m","5억유로","€500million","500 million"],kw:"€500M",
+   ex:"FORVIA는 AI 활용 R&D 최적화 등을 통해 2028년까지 €500M(5억 유로) 절감을 목표로 합니다."}
+];
+
+let myName='',myScore=0,myTime=0;
+let current=0,qStart=0,timerVal=60,timerOn=false,timerInterval=null;
+let tries=0,solved=false,prevScreen='setup';
+
+// ── DB 함수 ──
+async function loadScores(){
+  const {data,error}=await sb.from('quiz_scores')
+    .select('*').order('score',{ascending:false}).order('time_sec',{ascending:true}).limit(30);
+  if(error) throw error;
+  return data||[];
+}
+async function saveScore(){
+  const avg=myScore?Math.round(myTime/myScore):999;
+  // 같은 이름 기존 기록 확인
+  const {data:existing}=await sb.from('quiz_scores').select('id,score,time_sec').eq('name',myName);
+  if(existing&&existing.length>0){
+    const old=existing[0];
+    if(myScore>old.score||(myScore===old.score&&myTime<old.time_sec)){
+      await sb.from('quiz_scores').update({score:myScore,time_sec:myTime,avg_sec:avg}).eq('id',old.id);
+    }
+  } else {
+    await sb.from('quiz_scores').insert({name:myName,score:myScore,time_sec:myTime,avg_sec:avg});
+  }
+}
+async function clearAllScores(){
+  await sb.from('quiz_scores').delete().neq('id',0);
+}
+
+// ── 시작 ──
+function startGame(){
+  myName=document.getElementById('my-name').value.trim();
+  if(!myName){alert('이름을 입력해주세요.');document.getElementById('my-name').focus();return;}
+  myScore=0;myTime=0;current=0;
+  show('game');renderQ();
+}
+
+// ── 문제 ──
+function renderQ(){
+  solved=false;tries=0;
+  const q=Q[current];
+  document.getElementById('q-tag').textContent=`문제 ${current+1} / ${Q.length}`;
+  document.getElementById('score-summary').textContent=`${myName} · ${myScore}점 · ${myTime}초`;
+  document.getElementById('prog').style.width=`${(current/Q.length)*100}%`;
+  const srcEl=document.getElementById('q-src');
+  srcEl.textContent=q.src;
+  const CM={'src-1':['#DBEAFE','#1D4ED8'],'src-2':['#D1FAE5','#065F46'],'src-4':['#EDE9FE','#5B21B6']};
+  const[bg,fg]=CM[q.sc]||['#F1F5F9','#374151'];
+  srcEl.style.cssText=`background:${bg};color:${fg};display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;margin-bottom:9px;`;
+  document.getElementById('q-text').textContent=q.q;
+  const inp=document.getElementById('ans-input');
+  inp.value='';inp.disabled=false;inp.className='ans-input';
+  document.getElementById('input-area').className='input-area on';
+  document.getElementById('feedback').style.display='none';
+  document.getElementById('hint-box').style.display='none';
+  document.getElementById('hint-btn').style.display='inline-block';
+  document.getElementById('explain').style.display='none';
+  document.getElementById('tries-info').textContent='';
+  document.getElementById('my-status').textContent='';
+  document.getElementById('submit-btn').style.display='block';
+  document.getElementById('next-btn').style.display='none';
+  qStart=Date.now();
+  startTimer();
+  setTimeout(()=>inp.focus(),100);
+}
+
+// ── 정답 ──
+function submitAns(){
+  if(solved)return;
+  const inp=document.getElementById('ans-input');
+  const val=inp.value.trim().toLowerCase().replace(/\s+/g,' ');
+  if(!val){inp.focus();return;}
+  tries++;
+  const q=Q[current];
+  const ok=q.ans.some(a=>val.includes(a.toLowerCase())||a.toLowerCase().includes(val));
+  const fb=document.getElementById('feedback');
+  if(ok){
+    solved=true;
+    const elapsed=Math.round((Date.now()-qStart)/1000);
+    myScore++;myTime+=elapsed;
+    inp.disabled=true;inp.className='ans-input ok';
+    document.getElementById('input-area').className='input-area ok';
+    fb.innerHTML=`✅ 정답! <strong style="color:#065F46;">${q.kw}</strong> (${elapsed}초)`;
+    fb.className='feedback ok';fb.style.display='flex';
+    stopTimer();
+    document.getElementById('submit-btn').style.display='none';
+    document.getElementById('hint-btn').style.display='none';
+    document.getElementById('explain').innerHTML=`<strong>💡 해설:</strong> ${q.ex}`;
+    document.getElementById('explain').style.display='block';
+    document.getElementById('my-status').textContent=`✅ 현재 ${myScore}점 · 누적 ${myTime}초`;
+    document.getElementById('next-btn').style.display='inline-block';
+    document.getElementById('score-summary').textContent=`${myName} · ${myScore}점 · ${myTime}초`;
+  } else {
+    inp.className='ans-input ng';
+    document.getElementById('input-area').className='input-area ng';
+    fb.innerHTML=`❌ 틀렸습니다. 다시 찾아보세요! (${tries}번째 시도)`;
+    fb.className='feedback ng';fb.style.display='flex';
+    setTimeout(()=>{
+      inp.value='';inp.className='ans-input';
+      document.getElementById('input-area').className='input-area on';
+      fb.style.display='none';inp.focus();
+    },1200);
+    if(tries>=3){
+      document.getElementById('hint-box').textContent='🔍 힌트: '+q.hint;
+      document.getElementById('hint-box').style.display='block';
+      document.getElementById('tries-info').textContent=`${tries}번 시도 — 힌트를 확인하세요`;
+    } else {
+      document.getElementById('tries-info').textContent=`${tries}번째 시도 — ${3-tries}번 더 틀리면 힌트 공개`;
+    }
+  }
+}
+
+function toggleHint(){
+  const h=document.getElementById('hint-box');
+  h.style.display=h.style.display==='block'?'none':'block';
+  if(h.style.display==='block') h.textContent='🔍 힌트: '+Q[current].hint;
+}
+function nextQ(){if(!solved)return;current++;if(current>=Q.length){showResult();return;}renderQ();}
+
+// ── 결과 ──
+async function showResult(){
+  stopTimer();show('result');
+  const perfect=myScore===Q.length;
+  document.getElementById('r-title').textContent=perfect?'🏆 퍼펙트!':'🎯 완료!';
+  document.getElementById('r-sub').textContent=`${myName} · ${myScore}/${Q.length}문제 정답`;
+  document.getElementById('r-score').textContent=`${myScore}개`;
+  document.getElementById('r-time').textContent=`${myTime}초`;
+  document.getElementById('r-avg').textContent=`${myScore?Math.round(myTime/myScore):'-'}초`;
+  const msg=document.getElementById('saving-msg');
+  msg.textContent='💾 순위표에 저장 중...';
+  try{
+    await saveScore();
+    msg.textContent='✅ 순위표에 저장됐습니다!';
+  }catch(e){
+    msg.textContent='⚠️ 저장 실패: '+e.message;
+  }
+}
+
+// ── 순위표 ──
+async function showLeaderboard(from){
+  prevScreen=from;show('leaderboard');
+  const card=document.getElementById('lb-card');
+  card.innerHTML='<div class="lb-empty">⏳ 불러오는 중...</div>';
+  try{
+    const scores=await loadScores();
+    if(!scores.length){
+      card.innerHTML='<div class="lb-empty">아직 기록이 없습니다.<br>게임을 완료하면 여기에 나타납니다! 🎮</div>';
+      return;
+    }
+    const medals=['🥇','🥈','🥉'];
+    const rc=(i)=>i===0?'gold':i===1?'silver':i===2?'bronze':'';
+    card.innerHTML=`
+      <div class="lb-header">
+        <div>순위</div><div>이름</div><div>점수</div><div>소요시간</div><div>문제당 평균</div>
+      </div>
+      ${scores.map((s,i)=>`
+        <div class="lb-row ${rc(i)}">
+          <div class="lb-rank">${medals[i]||i+1}</div>
+          <div class="lb-name">${s.name}</div>
+          <div class="lb-score">${s.score}/${Q.length}</div>
+          <div class="lb-time">${s.time_sec}초</div>
+          <div class="lb-avg">${s.avg_sec}초</div>
+        </div>`).join('')}`;
+  }catch(e){
+    card.innerHTML=`<div class="lb-empty">⚠️ 불러오기 실패: ${e.message}</div>`;
+  }
+}
+async function clearBoard(){
+  if(!confirm('순위표 기록을 모두 초기화할까요?'))return;
+  try{
+    await clearAllScores();
+    document.getElementById('lb-card').innerHTML='<div class="lb-empty">순위표가 초기화됐습니다.</div>';
+  }catch(e){alert('초기화 실패: '+e.message);}
+}
+function goBack(){show(prevScreen);}
+function restart(){show('setup');}
+
+// ── 타이머 ──
+function startTimer(){
+  timerVal=60;timerOn=true;updateTimerUI();
+  clearInterval(timerInterval);
+  timerInterval=setInterval(()=>{
+    if(!timerOn)return;timerVal--;updateTimerUI();
+    if(timerVal<=0){stopTimer();autoHint();}
+  },1000);
+}
+function stopTimer(){timerOn=false;clearInterval(timerInterval);}
+function toggleTimer(){timerOn=!timerOn;document.getElementById('tbtn').textContent=timerOn?'⏸':'▶';}
+function resetTimer(){stopTimer();startTimer();}
+function updateTimerUI(){
+  const el=document.getElementById('timer');el.textContent=timerVal;
+  el.className='timer-num'+(timerVal<=10?' danger':timerVal<=20?' warn':'');
+}
+function autoHint(){
+  document.getElementById('hint-box').textContent='🔍 힌트: '+Q[current].hint;
+  document.getElementById('hint-box').style.display='block';
+  document.getElementById('tries-info').textContent='⏰ 시간 초과! 힌트를 확인하세요';
+}
+function show(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+</script>
+</body>
+</html>
