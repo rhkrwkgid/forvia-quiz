@@ -339,7 +339,8 @@ async function saveScore(){
   }
 }
 async function clearAllScores(){
-  await sb.from('quiz_scores').delete().neq('id',0);
+  const {error}=await sb.from('quiz_scores').delete().neq('id',0);
+  if(error) throw error;
 }
 
 // ── 시작 ──
