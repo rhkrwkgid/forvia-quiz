@@ -3,29 +3,35 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>FORVIA × TENX | NotebookLM 퀴즈</title>
+<title>건축공간연구원 | 건축법령 퀴즈</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  :root{--blue:#0926BD;--sky:#38BDF8;--dark:#0F172A;--white:#FFFFFF;
-    --gray:#94A3B8;--light:#F1F5F9;--slate:#E2E8F0;
-    --green:#10B981;--red:#EF4444;--yellow:#F59E0B;--purple:#8B5CF6;--bg:#F8FAFC;}
+  :root{--blue:#1B5E3B;--sky:#4CAF82;--dark:#0F1A0F;--white:#FFFFFF;
+    --gray:#7A8C7A;--light:#F1F6F2;--slate:#D8E6DC;
+    --green:#2E8B57;--red:#EF4444;--yellow:#F59E0B;--purple:#8B5CF6;--bg:#F5FAF6;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;
     background:var(--bg);color:var(--dark);min-height:100vh;}
-  header{background:linear-gradient(135deg,var(--blue) 0%,#1D4ED8 100%);
-    padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;
-    box-shadow:0 2px 12px rgba(9,38,189,0.3);}
-  .h-title{font-size:14px;font-weight:700;color:var(--white);}
-  .h-badge{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);
-    border-radius:20px;padding:4px 13px;font-size:12px;font-weight:600;color:var(--white);}
+  header{background:#FFFFFF;border-bottom:3px solid var(--blue);
+    padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);}
+  .h-logo{display:flex;align-items:center;gap:12px;}
+  .h-logo-mark{width:40px;height:40px;background:var(--blue);border-radius:6px;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .h-logo-mark svg{width:24px;height:24px;fill:white;}
+  .h-logo-text{display:flex;flex-direction:column;}
+  .h-logo-kr{font-size:13px;font-weight:800;color:var(--blue);letter-spacing:-0.3px;}
+  .h-logo-en{font-size:10px;font-weight:600;color:var(--gray);letter-spacing:0.5px;}
+  .h-badge{background:var(--blue);border-radius:20px;
+    padding:5px 14px;font-size:12px;font-weight:600;color:var(--white);}
   .screen{display:none;}.screen.active{display:block;}
 
   /* SETUP */
   #setup{max-width:540px;margin:0 auto;padding:36px 20px;}
-  .hero{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;
+  .hero{background:linear-gradient(135deg,#E8F5EE,#C8E6D4);border:1px solid #A8D5B8;
     border-radius:20px;padding:28px 32px;margin-bottom:20px;text-align:center;}
   .hero h1{font-size:24px;font-weight:800;color:var(--blue);margin-bottom:6px;}
-  .hero p{font-size:13px;color:#3B82F6;line-height:1.6;}
+  .hero p{font-size:13px;color:#2E7D52;line-height:1.6;}
   .how-box{background:var(--white);border:1px solid var(--slate);border-radius:14px;
     padding:18px 20px;margin-bottom:20px;}
   .how-box h3{font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;
@@ -40,32 +46,32 @@
   .how-step p{font-size:10.5px;font-weight:600;color:var(--dark);line-height:1.4;}
   .card{background:var(--white);border:1px solid var(--slate);border-radius:16px;padding:22px;margin-bottom:16px;}
   .card h3{font-size:12px;font-weight:700;color:var(--blue);text-transform:uppercase;
-    letter-spacing:1px;margin-bottom:14px;}
+    letter-spacing:1px;margin-bottom:14px;letter-spacing:0.5px;}
   #my-name{width:100%;border:2px solid var(--slate);border-radius:12px;
     padding:13px 16px;font-size:18px;font-weight:700;color:var(--dark);
     outline:none;transition:border-color 0.2s;background:var(--light);}
   #my-name:focus{border-color:var(--blue);background:var(--white);}
   .btn-row{display:flex;gap:10px;}
   .start-btn{flex:3;padding:15px;font-size:16px;font-weight:800;
-    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);
+    background:linear-gradient(135deg,var(--blue),#2E8B57);color:var(--white);
     border:none;border-radius:12px;cursor:pointer;
-    box-shadow:0 4px 14px rgba(9,38,189,0.35);transition:transform 0.15s;}
+    box-shadow:0 4px 14px rgba(27,94,59,0.35);transition:transform 0.15s;}
   .start-btn:hover{transform:translateY(-2px);}
   .rank-btn{flex:1;padding:15px;font-size:14px;font-weight:700;
     background:var(--white);color:var(--blue);border:2px solid var(--blue);
     border-radius:12px;cursor:pointer;transition:all 0.15s;}
-  .rank-btn:hover{background:#EFF6FF;}
+  .rank-btn:hover{background:#E8F5EE;}
 
   /* GAME */
   #game{max-width:780px;margin:0 auto;padding:24px 20px;}
   .prog-meta{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--gray);margin-bottom:5px;}
   .prog-track{height:6px;background:var(--slate);border-radius:3px;overflow:hidden;margin-bottom:22px;}
-  .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));border-radius:3px;transition:width 0.4s ease;}
+  .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#4CAF82);border-radius:3px;transition:width 0.4s ease;}
   .game-top{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:20px;}
   .q-info{flex:1;}
   .q-src{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;margin-bottom:9px;}
   .q-text{font-size:20px;font-weight:800;line-height:1.45;color:var(--dark);letter-spacing:-0.4px;}
-  .nlm-hint{font-size:12px;color:#3B82F6;margin-top:7px;font-weight:600;}
+  .nlm-hint{font-size:12px;color:#2E7D52;margin-top:7px;font-weight:600;}
   .timer-card{background:var(--white);border:2px solid var(--slate);border-radius:14px;padding:12px 16px;text-align:center;min-width:100px;}
   .timer-num{font-size:34px;font-weight:800;line-height:1;margin-bottom:3px;transition:color 0.3s;color:var(--blue);}
   .timer-num.warn{color:var(--yellow);}.timer-num.danger{color:var(--red);}
@@ -92,24 +98,24 @@
     padding:8px 16px;font-size:12px;font-weight:600;color:var(--gray);cursor:pointer;margin-bottom:13px;transition:all 0.2s;}
   .hint-btn:hover{border-color:var(--blue);color:var(--blue);}
   .hint-box{background:#FEF3C7;border:1px solid #FDE68A;border-radius:9px;padding:11px 15px;font-size:13px;color:#92400E;margin-bottom:13px;display:none;}
-  .explain-box{background:#EFF6FF;border:1px solid #BFDBFE;border-radius:11px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:#1E3A8A;display:none;line-height:1.6;}
+  .explain-box{background:#E8F5EE;border:1px solid #A8D5B8;border-radius:11px;padding:13px 16px;margin-bottom:16px;font-size:13px;color:#1B5E3B;display:none;line-height:1.6;}
   .tries-info{font-size:11.5px;color:var(--gray);margin-bottom:10px;}
   #my-status{font-size:13.5px;font-weight:700;color:var(--green);margin-bottom:12px;min-height:18px;}
   .submit-btn{width:100%;padding:14px;font-size:15px;font-weight:700;
-    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);
+    background:linear-gradient(135deg,var(--blue),#2E8B57);color:var(--white);
     border:none;border-radius:11px;cursor:pointer;margin-bottom:12px;
-    box-shadow:0 3px 10px rgba(9,38,189,0.28);transition:all 0.15s;}
+    box-shadow:0 3px 10px rgba(27,94,59,0.28);transition:all 0.15s;}
   .submit-btn:hover{transform:translateY(-1px);}
   .next-btn{padding:12px 28px;font-size:14px;font-weight:700;
-    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);
-    border:none;border-radius:11px;cursor:pointer;display:none;box-shadow:0 3px 10px rgba(9,38,189,0.28);}
+    background:linear-gradient(135deg,var(--blue),#2E8B57);color:var(--white);
+    border:none;border-radius:11px;cursor:pointer;display:none;box-shadow:0 3px 10px rgba(27,94,59,0.28);}
 
   /* RESULT */
   #result{max-width:480px;margin:0 auto;padding:36px 20px;text-align:center;}
-  .result-hero{background:linear-gradient(135deg,#EFF6FF,#DBEAFE);border:1px solid #BFDBFE;
+  .result-hero{background:linear-gradient(135deg,#E8F5EE,#C8E6D4);border:1px solid #A8D5B8;
     border-radius:18px;padding:28px;margin-bottom:20px;}
   .result-hero h1{font-size:28px;font-weight:800;color:var(--blue);margin-bottom:5px;}
-  .result-hero p{font-size:14px;color:#3B82F6;}
+  .result-hero p{font-size:14px;color:#2E7D52;}
   .stat-row{display:flex;background:var(--white);border:1px solid var(--slate);
     border-radius:14px;overflow:hidden;margin-bottom:18px;}
   .stat-box{flex:1;padding:16px 10px;text-align:center;}
@@ -121,13 +127,13 @@
   .result-btns{display:flex;gap:10px;justify-content:center;}
   .btn-lb{padding:13px 20px;font-size:14px;font-weight:700;background:var(--white);
     color:var(--blue);border:2px solid var(--blue);border-radius:11px;cursor:pointer;}
-  .btn-lb:hover{background:#EFF6FF;}
+  .btn-lb:hover{background:#E8F5EE;}
   .btn-restart{padding:13px 20px;font-size:14px;font-weight:700;
-    background:linear-gradient(135deg,var(--blue),#1D4ED8);color:var(--white);border:none;border-radius:11px;cursor:pointer;}
+    background:linear-gradient(135deg,var(--blue),#2E8B57);color:var(--white);border:none;border-radius:11px;cursor:pointer;}
 
   /* LEADERBOARD */
   #leaderboard{max-width:600px;margin:0 auto;padding:36px 20px;}
-  .lb-title{font-size:22px;font-weight:800;color:var(--blue);text-align:center;margin-bottom:4px;}
+  .lb-title{font-size:22px;font-weight:800;color:var(--blue);text-align:center;margin-bottom:4px;letter-spacing:-0.4px;}
   .lb-sub{font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px;}
   .lb-card{background:var(--white);border:1px solid var(--slate);border-radius:16px;overflow:hidden;margin-bottom:16px;}
   .lb-header{display:grid;grid-template-columns:32px 52px 1fr 64px 72px 76px;
@@ -149,6 +155,7 @@
   .lb-btns{display:flex;gap:10px;justify-content:center;}
   .lb-back{padding:12px 22px;font-size:14px;font-weight:700;background:var(--white);
     color:var(--blue);border:2px solid var(--blue);border-radius:11px;cursor:pointer;}
+  .lb-back:hover{background:#E8F5EE;}
   .lb-delete-sel{padding:12px 22px;font-size:14px;font-weight:700;background:#FEF2F2;
     color:var(--red);border:2px solid #FCA5A5;border-radius:11px;cursor:pointer;}
   .lb-clear{padding:12px 22px;font-size:14px;font-weight:700;background:#FEF2F2;
@@ -160,23 +167,33 @@
 <body>
 
 <header>
-  <div class="h-title">FORVIA × TENX &nbsp;|&nbsp; 팀장을 위한 AI 실무 활용 워크샵</div>
-  <div class="h-badge">M3 · NotebookLM 퀴즈</div>
+  <div class="h-logo">
+    <div class="h-logo-mark">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 21V9l9-6 9 6v12H3zm2-2h5v-5h4v5h5V10.1L12 5.1 5 10.1V19z"/>
+      </svg>
+    </div>
+    <div class="h-logo-text">
+      <span class="h-logo-kr">건축공간연구원</span>
+      <span class="h-logo-en">Architecture &amp; Urban Research Institute</span>
+    </div>
+  </div>
+  <div class="h-badge">건축법령 퀴즈</div>
 </header>
 
 <!-- SETUP -->
 <div id="setup" class="screen active">
   <div class="hero">
-    <h1>📖 NotebookLM 퀴즈 게임</h1>
-    <p>오늘 업로드한 자료 6종에서 출제된 주관식 문제입니다<br>
-      모르면 NotebookLM에서 검색해서 직접 입력하세요!</p>
+    <h1>🏛 건축법령 퀴즈</h1>
+    <p>건축법 시행령 및 건축물관리법을 바탕으로 출제된 주관식 퀴즈입니다<br>
+      법령 내용을 잘 떠올리며 정확한 용어로 답해보세요!</p>
   </div>
   <div class="how-box">
     <h3>진행 방법</h3>
     <div class="how-steps">
-      <div class="how-step"><div class="step-icon s1">📖</div><p>NotebookLM<br>열어두기</p></div>
-      <div class="how-step"><div class="step-icon s2">🔍</div><p>문제 보고<br>자료 검색</p></div>
-      <div class="how-step"><div class="step-icon s3">✏️</div><p>답 입력<br>후 제출</p></div>
+      <div class="how-step"><div class="step-icon s1">📜</div><p>법령 내용<br>떠올리기</p></div>
+      <div class="how-step"><div class="step-icon s2">🔍</div><p>문제 잘<br>읽기</p></div>
+      <div class="how-step"><div class="step-icon s3">✏️</div><p>정확한 용어<br>입력 후 제출</p></div>
       <div class="how-step"><div class="step-icon s4">🏆</div><p>순위표에<br>기록</p></div>
     </div>
   </div>
@@ -202,7 +219,7 @@
     <div class="q-info">
       <div class="q-src" id="q-src"></div>
       <div class="q-text" id="q-text"></div>
-      <div class="nlm-hint">💡 NotebookLM에서 찾아보세요!</div>
+      <div class="nlm-hint">💡 법령 조문을 떠올려 정확한 용어로 입력하세요!</div>
     </div>
     <div class="timer-card">
       <div class="timer-num" id="timer">60</div>
