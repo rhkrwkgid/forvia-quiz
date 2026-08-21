@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>건축공간연구원 | 건축법령 퀴즈</title>
+<title>FORVIA × TENX | NotebookLM 퀴즈</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root{--blue:#1B5E3B;--sky:#4CAF82;--dark:#0F1A0F;--white:#FFFFFF;
@@ -174,24 +174,24 @@
       </svg>
     </div>
     <div class="h-logo-text">
-      <span class="h-logo-kr">건축공간연구원</span>
-      <span class="h-logo-en">Architecture &amp; Urban Research Institute</span>
+      <span class="h-logo-kr">FORVIA × TENX</span>
+      <span class="h-logo-en">NotebookLM Hands-on Workshop</span>
     </div>
   </div>
-  <div class="h-badge">건축법령 퀴즈</div>
+  <div class="h-badge">NotebookLM 퀴즈</div>
 </header>
 
 <!-- SETUP -->
 <div id="setup" class="screen active">
   <div class="hero">
-    <h1>🏛 건축법령 퀴즈</h1>
-    <p>건축법 시행령 및 건축물관리법을 바탕으로 출제된 주관식 퀴즈입니다<br>
-      법령 내용을 잘 떠올리며 정확한 용어로 답해보세요!</p>
+    <h1>📖 NotebookLM 퀴즈 게임</h1>
+    <p>오늘 업로드한 자료 6종에서 출제된 주관식 문제입니다<br>
+      모르면 NotebookLM에서 검색해서 직접 입력하세요!</p>
   </div>
   <div class="how-box">
     <h3>진행 방법</h3>
     <div class="how-steps">
-      <div class="how-step"><div class="step-icon s1">📜</div><p>법령 내용<br>떠올리기</p></div>
+      <div class="how-step"><div class="step-icon s1">📚</div><p>NotebookLM에<br>자료 6종 업로드</p></div>
       <div class="how-step"><div class="step-icon s2">🔍</div><p>문제 잘<br>읽기</p></div>
       <div class="how-step"><div class="step-icon s3">✏️</div><p>정확한 용어<br>입력 후 제출</p></div>
       <div class="how-step"><div class="step-icon s4">🏆</div><p>순위표에<br>기록</p></div>
@@ -219,7 +219,7 @@
     <div class="q-info">
       <div class="q-src" id="q-src"></div>
       <div class="q-text" id="q-text"></div>
-      <div class="nlm-hint">💡 법령 조문을 떠올려 정확한 용어로 입력하세요!</div>
+      <div class="nlm-hint">💡 모르면 NotebookLM에서 검색해 정확한 용어로 입력하세요!</div>
     </div>
     <div class="timer-card">
       <div class="timer-num" id="timer">60</div>
@@ -284,56 +284,56 @@ const SUPABASE_KEY = 'sb_publishable_MMMshr6nQPOItlV9vmRYwA_BWYn8tH_';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const Q=[
-  {q:"건축법 시행령에서 건축물을 해체하지 않고 같은 대지 안의 다른 위치로 옮기는 행위를 무엇이라 하는가?",
-   src:"📄 건축법 시행령",sc:"src-1",
-   hint:"신축·증축·개축·재축과 나란히 나열되는 건축 행위 중 하나",
-   ans:["이전"],kw:"이전",
-   ex:"건축법 시행령 제2조 제5호: '이전'이란 건축물의 주요구조부를 해체하지 아니하고 같은 대지의 다른 위치로 옮기는 것을 말한다."},
-  {q:"건축법 시행령상 기존 건축물의 전부 또는 일부(내력벽·기둥·보·지붕틀 중 셋 이상 포함)를 철거하고 종전 규모로 다시 축조하는 행위는?",
-   src:"📄 건축법 시행령",sc:"src-1",
-   hint:"'재축'은 재해로 멸실된 경우, 이것은 의도적으로 허무는 경우",
-   ans:["개축"],kw:"개축",
-   ex:"건축법 시행령 제2조 제3호: '개축'이란 기존 건축물의 전부 또는 일부(내력벽·기둥·보·지붕틀 중 셋 이상이 포함되는 경우)를 철거하고 그 대지에 종전과 같은 규모 범위에서 다시 축조하는 것을 말한다."},
-  {q:"건축법 시행령에서 층수가 50층 이상이거나 높이가 200m 이상인 건축물을 무엇이라 하는가?",
-   src:"📄 건축법 시행령",sc:"src-1",
-   hint:"고층 건축물보다 한 단계 위 분류",
-   ans:["초고층 건축물"],kw:"초고층 건축물",
-   ex:"건축법 시행령 제2조 제15호: '초고층 건축물'이란 층수가 50층 이상이거나 높이가 200m 이상인 건축물을 말한다. 이에 해당하면 피난안전구역 설치 등 강화된 기준이 적용된다."},
-  {q:"건축법 시행령상 건축물의 기둥·보·내력벽·주계단 등을 증설 또는 해체하거나 그 일부를 수선·변경하는 것을 무엇이라 하는가?",
-   src:"📄 건축법 시행령",sc:"src-1",
-   hint:"'대규모 수선'을 두 글자로 줄인 용어",
-   ans:["대수선"],kw:"대수선",
-   ex:"건축법 시행령 제3조의2: '대수선'이란 건축물의 기둥, 보, 내력벽, 주계단 등 주요구조부를 증설 또는 해체하거나 일부를 수선·변경하는 것으로, 건축 허가 또는 신고 대상이 된다."},
-  {q:"건축법 시행령에서 바닥이 지표면 아래에 있고 바닥에서 지표면까지 평균 높이가 해당 층 높이의 2분의 1 이상인 층을 무엇이라 하는가?",
-   src:"📄 건축법 시행령",sc:"src-1",
-   hint:"지상층의 반대 개념",
-   ans:["지하층"],kw:"지하층",
-   ex:"건축법 시행령 제119조 제1항 제10호: '지하층'이란 건축물의 바닥이 지표면 아래에 있는 층으로서 바닥에서 지표면까지의 평균 높이가 해당 층 높이의 2분의 1 이상인 것을 말한다."},
-  {q:"건축물관리법에서 건축물을 해체하기 위해 허가권자에게 허가 신청 시 의무적으로 첨부해야 하는 서류의 명칭은?",
-   src:"📄 건축물관리법",sc:"src-2",
-   hint:"해체 '계획'을 담은 '서류'",
-   ans:["해체계획서"],kw:"해체계획서",
-   ex:"건축물관리법 제30조: 건축물을 해체하려는 자는 해체계획서를 작성하여 허가권자에게 제출하고 허가를 받아야 한다. 해체계획서에는 해체 방법, 안전관리 계획 등이 포함된다."},
-  {q:"건축물관리법상 정기점검보다 심층적으로 실시하며 결함의 원인 등을 조사·분석하는 점검의 명칭은?",
-   src:"📄 건축물관리법",sc:"src-2",
-   hint:"'정기'보다 더 정밀하게",
-   ans:["정밀점검"],kw:"정밀점검",
-   ex:"건축물관리법 제12조: '정밀점검'은 정기점검보다 심층적인 조사로, 건축물의 현재 상태를 정밀하게 측정·평가하여 결함의 원인을 분석하고 보수·보강 방안을 제시한다."},
-  {q:"건축물관리법에서 건축물의 화재 안전 성능을 높이기 위해 허가권자가 소유자에게 명할 수 있는 보강 조치의 명칭은?",
-   src:"📄 건축물관리법",sc:"src-2",
-   hint:"'화재안전' + '성능' + '보강'",
-   ans:["화재안전성능보강"],kw:"화재안전성능보강",
-   ex:"건축물관리법 제22조: 허가권자는 화재 위험이 높다고 인정되는 건축물에 대해 소유자·관리자에게 화재안전성능보강을 명할 수 있으며, 비용의 일부를 지원할 수 있다."},
-  {q:"건축물관리법상 관리자가 건축물을 체계적으로 유지·관리하기 위해 수립해야 하는 계획의 명칭은?",
-   src:"📄 건축물관리법",sc:"src-2",
-   hint:"'건축물관리' + '계획'",
-   ans:["건축물관리계획"],kw:"건축물관리계획",
-   ex:"건축물관리법 제10조: 관리자는 건축물의 체계적인 유지·관리를 위하여 건축물관리계획을 수립하고, 이를 허가권자에게 제출해야 한다."},
-  {q:"건축법 시행령상 주요구조부 중 하나로, 건축물 상부의 하중을 기둥 또는 벽체에 전달하는 수평 구조 부재는?",
-   src:"📄 건축법 시행령",sc:"src-1",
-   hint:"'기둥'과 세트로 등장하는 수평 부재",
-   ans:["보"],kw:"보",
-   ex:"건축법 시행령 제2조 제7호: 주요구조부란 내력벽, 기둥, 바닥, 보, 지붕틀 및 주계단을 말하며, 이 중 '보'는 상부 하중을 기둥이나 벽체에 전달하는 수평 구조 부재다."}
+  {q:"FORVIA 옌청(Yancheng) 공장이 2026년 1월 WEF로부터 받은 인증 이름은?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"보도자료 제목에 바로 나옵니다 — 'Lighthouse ___ Factory'",
+   ans:["등대공장","lighthouse factory","라이트하우스","등대 공장"],kw:"등대공장",
+   ex:"2026년 1월 15일, FORVIA 옌청 시트 공장이 WEF로부터 '등대공장(Lighthouse Factory)' 생산성 우수 부문으로 선정됐습니다. FORVIA 전 세계 최초입니다."},
+  {q:"옌청 공장에서 AI 솔루션의 투자 회수 기간은 몇 개월인가요?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'AI 투자 회수 기간'으로 NotebookLM에서 검색하세요",
+   ans:["7.5개월","7.5 개월","7.5달","7.5"],kw:"7.5개월",
+   ex:"보도자료 원문: 'the return on investments of AI solutions implemented in 7.5 months.' — AI 솔루션 투자 비용을 7.5개월 만에 회수했습니다."},
+  {q:"옌청 공장에서 생성형 AI로 최적화를 46% 향상시킨 공정은?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'generative AI'로 NotebookLM에서 검색하세요",
+   ans:["금형 교체","die change","다이 체인지","금형교체"],kw:"금형 교체(die change)",
+   ex:"원문: 'uses generative AI to boost die change optimization by 46%' — 금형 교체 최적화를 생성형 AI로 46% 향상시켰습니다."},
+  {q:"옌청 공장이 빅데이터 모델로 대체한 기존 검사 공정은? (영문 또는 한글)",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'accuracy over 90%'와 함께 언급된 공정입니다",
+   ans:["파괴 테스트","destructive testing","파괴테스트","파괴검사"],kw:"파괴 테스트",
+   ex:"원문: 'replaced and optimized destructive testing by using big data model with accuracy over 90%' — 파괴 테스트를 빅데이터 모델로 대체해 정확도 90% 이상을 달성했습니다."},
+  {q:"옌청 공장은 아시아에서 가장 큰 무엇의 생산 사이트인가요?",
+   src:"📄 자료①",sc:"src-1",
+   hint:"'Asia's largest'로 NotebookLM에서 검색하세요",
+   ans:["자동차 시트 트랙","automotive seat track","시트 트랙","seat track"],kw:"자동차 시트 트랙",
+   ex:"원문: 'As Asia's largest automotive seat track production site' — 자동차 시트 트랙 생산에서 아시아 최대 규모입니다."},
+  {q:"FORVIA Appning이 Microsoft와 협력해 통합하기로 한 Microsoft 도구 이름은?",
+   src:"🌐 자료②",sc:"src-2",
+   hint:"Microsoft Foundry ___",
+   ans:["microsoft foundry tools","foundry tools","파운드리 툴","foundry"],kw:"Microsoft Foundry Tools",
+   ex:"Appning by FORVIA는 Microsoft Foundry Tools를 통합해 음성 인터페이스, 콘텐츠 검색, 개인화 경험을 강화합니다."},
+  {q:"FORVIA의 디지털 트윈 기술로 설계된 첫 탄소중립 공장이 있는 지역은?",
+   src:"🌐 자료③",sc:"src-3",
+   hint:"중국에 있는 전자 부문 메가 플랜트입니다",
+   ans:["펑청","fengcheng","봉성"],kw:"펑청(Fengcheng)",
+   ex:"중국 펑청(Fengcheng) 전자 메가 플랜트는 FORVIA 최초의 탄소중립 공장이자, 디지털 트윈으로 설계된 세계 최초 수준의 공장입니다. 89개 생산 라인에 AI·디지털화·자동화가 통합됐습니다."},
+  {q:"FORVIA가 2028년까지 AI 활용으로 달성하려는 절감 목표액은? (단위 포함)",
+   src:"🌐 자료④",sc:"src-4",
+   hint:"유럽 인력 재편 계획과 함께 언급된 금액입니다",
+   ans:["500million","€500m","500m","5억유로","€500million","500 million","5억 유로"],kw:"€500M (5억 유로)",
+   ex:"FORVIA는 AI 활용 R&D 최적화 등을 통해 2028년까지 €500M(5억 유로) 절감을 목표로 합니다. 유럽 인력 13% 재편 계획의 일환입니다."},
+  {q:"KIET 보고서에서 '스스로 계획하고 도구를 활용하며 피드백 루프를 갖는 AI'를 무엇이라 부르나요?",
+   src:"📄 자료⑤",sc:"src-5",
+   hint:"생성형 AI의 다음 단계입니다 — '에이전틱 ___'",
+   ans:["에이전틱 ai","agentic ai","에이전틱","agentic"],kw:"에이전틱 AI (Agentic AI)",
+   ex:"생성형 AI가 일회성 응답에 그친다면, 에이전틱 AI는 스스로 계획을 세우고 도구를 활용하며 피드백 루프를 통해 개선합니다. 자율제조의 핵심 개념입니다."},
+  {q:"대한상의 SGI 보고서에서 국내 제조업의 AI 도입률은 몇 %인가요?",
+   src:"📄 자료⑥",sc:"src-6",
+   hint:"정보통신업 26%와 크게 대비되는 낮은 수치입니다",
+   ans:["4%","4","4퍼센트","약 4%"],kw:"4%",
+   ex:"국내 제조업 AI 도입률은 4%로, 정보통신업 26% 대비 현저히 낮습니다. 반면 AI 도입 기업은 매출 +4%, 부가가치 +7.6% 성과를 보였습니다."}
 ];
 
 let myName='',myScore=0,myTime=0;
@@ -382,7 +382,7 @@ function renderQ(){
   document.getElementById('prog').style.width=`${(current/Q.length)*100}%`;
   const srcEl=document.getElementById('q-src');
   srcEl.textContent=q.src;
-  const CM={'src-1':['#DBEAFE','#1D4ED8'],'src-2':['#D1FAE5','#065F46'],'src-4':['#EDE9FE','#5B21B6']};
+  const CM={'src-1':['#DBEAFE','#1D4ED8'],'src-2':['#D1FAE5','#065F46'],'src-3':['#FEF3C7','#92400E'],'src-4':['#EDE9FE','#5B21B6'],'src-5':['#FCE7F3','#9D174D'],'src-6':['#FFEDD5','#C2410C']};
   const[bg,fg]=CM[q.sc]||['#F1F5F9','#374151'];
   srcEl.style.cssText=`background:${bg};color:${fg};display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;margin-bottom:9px;`;
   document.getElementById('q-text').textContent=q.q;
